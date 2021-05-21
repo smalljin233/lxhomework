@@ -1,0 +1,130 @@
+package com.example.searchhttp;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String>{
+    private String httpType = "Http://";
+    private String target_URL;
+    private EditText editText;
+    private TextView showPage;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        editText = (EditText) findViewById(R.id.editTextTarget);
+        showPage = (TextView)findViewById(R.id.text_get);
+
+        Spinner spinner = (Spinner)findViewById(R.id.spinner_http);
+        ArrayList<String> list = new ArrayList<String>();
+        list.add("http://");
+        list.add("https://");
+
+        final ArrayAdapter<String> ad = new ArrayAdapter<String>(
+                this,R.layout.support_simple_spinner_dropdown_item,list);
+        ad.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(ad);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                httpType = list.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+
+        });
+        Button bt = (Button)findViewById(R.id.button);
+        bt.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                String queryString = httpType+editText.getText().toString();
+                Log.d("the httpType is :",queryString);
+                //String queryString = "https://www.baidu.com";
+
+                InputMethodManager inputManager = (InputMethodManager)
+                        getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                if (inputManager != null ) {
+                    inputManager.hideSoftInputFromWindow(v.getWindowToken(),
+                            InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+
+                ConnectivityManager connMgr = (ConnectivityManager)
+                        getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = null;
+                if (connMgr != null) {
+                    networkInfo = connMgr.getActiveNetworkInfo();
+                }
+                if (networkInfo != null && networkInfo.isConnected()
+                        && queryString.length() != 0) {
+//                    StringBuffer sb = new StringBuffer("");
+//                    target_URL="https://www.baidu.com";
+//                    String out = NetworkUtils.getInfo(target_URL);
+//                    showPage.setText(out);
+                    Bundle queryBundle = new Bundle();
+                    queryBundle.putString("queryString", queryString);
+                    getSupportLoaderManager().restartLoader(0, queryBundle, MainActivity.this);
+                    showPage.setText(R.string.loading);
+                }else {
+                    if (queryString.length() == 0) {
+                        showPage.setText(R.string.no_search_term);
+                    } else {
+                        showPage.setText(R.string.no_network);
+                    }
+                }
+
+            }
+        });
+        if(getSupportLoaderManager().getLoader(0)!=null){
+            getSupportLoaderManager().initLoader(0,null,this);
+        }
+
+    }
+
+    @NonNull
+    @org.jetbrains.annotations.NotNull
+    @Override
+    public Loader<String> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+        String queryString = "";
+
+        if (args != null) {
+            queryString = args.getString("queryString");
+        }
+
+        return new UrlLoader(this, queryString);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull @org.jetbrains.annotations.NotNull Loader<String> loader, String data) {
+        showPage.setText(data);
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull @org.jetbrains.annotations.NotNull Loader<String> loader) {
+
+    }
+}
