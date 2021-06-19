@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/dinaryImage"
+            android:adjustViewBounds="true"/>
+
+        <TextView
+            android:layout_alignBottom="@id/dinaryImage"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            android:id="@+id/title_item"
+            style="@style/TextAppearance.AppCompat.Headline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Title" />
+
+        <TextView
+            android:layout_below="@id/dinaryImage"
+            android:textColor="?android:textColorSecondary"
+            android:id="@+id/newsTitle_item"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="Dinary" />
+
+        <TextView
+            android:layout_below="@id/newsTitle_item"
+            android:id="@+id/subTitle_item"
+            style="@style/TextAppearance.AppCompat.Subhead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="here are some texts" />
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
